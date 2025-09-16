@@ -171,7 +171,7 @@ const io = new Server(httpServer, {
     origin: [
       "https://teamify.onlinemichel.dev",
       "https://www.teamify.onlinemichel.dev",
-      "http://localhost:3000", // Pour le développement local
+      "http://localhost:3000",
     ],
     methods: ["GET", "POST"],
     credentials: true,
