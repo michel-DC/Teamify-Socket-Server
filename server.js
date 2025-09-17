@@ -2,8 +2,7 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
-const hostname = process.env.HOSTNAME || "localhost";
-const port = process.env.SOCKET_PORT || process.env.PORT || 3001;
+const port = process.env.PORT || 3001;
 const appUrl =
   process.env.NEXT_PUBLIC_APP_URL ||
   (dev ? "http://localhost:3000" : "https://teamify.onlinemichel.dev");
@@ -389,13 +388,12 @@ io.on("error", (error) => {
 });
 
 // Démarrer le serveur
-httpServer.listen(port, hostname, (err) => {
+httpServer.listen(port, (err) => {
   if (err) {
     console.error("❌ Erreur de démarrage:", err);
     throw err;
   }
   console.log(`🚀 Serveur Socket.IO démarré sur le port ${port}`);
-  console.log(`🔗 URL: http://${hostname}:${port}`);
   console.log(`🌐 Application: ${appUrl}`);
 
   // En production, afficher des informations de santé
