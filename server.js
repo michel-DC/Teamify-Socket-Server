@@ -171,6 +171,8 @@ const io = new Server(httpServer, {
       "https://teamify.onlinemichel.dev",
       "https://www.teamify.onlinemichel.dev",
       "http://localhost:3000",
+      "https://teamify-socket-server.up.railway.app",
+      "https://socket.teamify.onlinemichel.dev/",
     ],
     methods: ["GET", "POST"],
     credentials: true,
