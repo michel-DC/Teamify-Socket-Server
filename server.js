@@ -186,6 +186,11 @@ const io = new Server(httpServer, {
 
 console.log("✅ Socket.IO initialisé");
 
+// Ajout de la gestion des erreurs de connexion engine.io
+io.engine.on("connection_error", (err) => {
+  console.error("❌ Connection error", err.req.url, err.code, err.message);
+});
+
 // Middleware d'authentification
 io.use(async (socket, next) => {
   try {
@@ -390,7 +395,7 @@ io.on("error", (error) => {
 });
 
 // Démarrer le serveur
-httpServer.listen(port, (err) => {
+httpServer.listen(port, "0.0.0.0", (err) => {
   if (err) {
     console.error("❌ Erreur de démarrage:", err);
     throw err;
