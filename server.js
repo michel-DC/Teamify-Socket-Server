@@ -2,7 +2,6 @@ import { createServer } from "http";
 import { Server } from "socket.io";
 
 const dev = process.env.NODE_ENV !== "production";
-const port = process.env.PORT || 3001;
 const appUrl =
   process.env.NEXT_PUBLIC_APP_URL ||
   (dev ? "http://localhost:3000" : "https://teamify.onlinemichel.dev");
@@ -18,7 +17,6 @@ if (!dev && !process.env.NEXT_PUBLIC_APP_URL) {
 console.log("🚀 Démarrage du serveur Socket.IO...");
 console.log(`📊 Environnement: ${dev ? "développement" : "production"}`);
 console.log(`🌐 URL de l'application: ${appUrl}`);
-console.log(`🔌 Port du serveur: ${port}`);
 
 // Créer le serveur HTTP simple
 const httpServer = createServer((req, res) => {
@@ -131,7 +129,7 @@ const httpServer = createServer((req, res) => {
           <div class="info-grid">
             <div class="info-item">
               <div class="info-label">Port</div>
-              <div class="info-value">${port}</div>
+              <div class="info-value">${process.env.PORT}</div>
             </div>
             <div class="info-item">
               <div class="info-label">Environnement</div>
@@ -166,6 +164,7 @@ const httpServer = createServer((req, res) => {
 
 // Initialiser Socket.IO avec une configuration optimisée pour la production
 const io = new Server(httpServer, {
+  path: "/socket.io",
   cors: {
     origin: [
       "https://teamify.onlinemichel.dev",
@@ -179,9 +178,6 @@ const io = new Server(httpServer, {
     allowedHeaders: ["Cookie", "Authorization"],
   },
   transports: ["websocket", "polling"],
-  allowEIO3: true,
-  pingTimeout: 60000,
-  pingInterval: 25000,
 });
 
 console.log("✅ Socket.IO initialisé");
@@ -395,6 +391,7 @@ io.on("error", (error) => {
 });
 
 // Démarrer le serveur
+const port = process.env.PORT || 3001;
 httpServer.listen(port, "0.0.0.0", (err) => {
   if (err) {
     console.error("❌ Erreur de démarrage:", err);
