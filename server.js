@@ -192,67 +192,67 @@ io.engine.on("connection_error", (err) => {
 });
 
 // Middleware d'authentification
-io.use(async (socket, next) => {
-  try {
-    if (dev) {
-      console.log("[Socket.IO] 🔍 Vérification de l'authentification...");
-    }
+// io.use(async (socket, next) => {
+//   try {
+//     if (dev) {
+//       console.log("[Socket.IO] 🔍 Vérification de l'authentification...");
+//     }
 
-    // Récupérer les cookies de la requête
-    const cookies = socket.handshake.headers.cookie;
-    if (dev) {
-      console.log("[Socket.IO] Cookies reçus:", cookies);
-    }
+//     // Récupérer les cookies de la requête
+//     const cookies = socket.handshake.headers.cookie;
+//     if (dev) {
+//       console.log("[Socket.IO] Cookies reçus:", cookies);
+//     }
 
-    if (!cookies) {
-      console.log("[Socket.IO] ❌ Aucun cookie fourni");
-      return next(new Error("Cookies requis"));
-    }
+//     if (!cookies) {
+//       console.log("[Socket.IO] ❌ Aucun cookie fourni");
+//       return next(new Error("Cookies requis"));
+//     }
 
-    // Vérifier l'authentification via l'API avec les cookies
-    try {
-      const response = await fetch(`${appUrl}/api/auth/me`, {
-        method: "GET",
-        headers: {
-          Cookie: cookies,
-          "Content-Type": "application/json",
-        },
-      });
+//     // Vérifier l'authentification via l'API avec les cookies
+//     try {
+//       const response = await fetch(`${appUrl}/api/auth/me`, {
+//         method: "GET",
+//         headers: {
+//           Cookie: cookies,
+//           "Content-Type": "application/json",
+//         },
+//       });
 
-      if (dev) {
-        console.log("[Socket.IO] Réponse API auth:", {
-          status: response.status,
-          ok: response.ok,
-        });
-      }
+//       if (dev) {
+//         console.log("[Socket.IO] Réponse API auth:", {
+//           status: response.status,
+//           ok: response.ok,
+//         });
+//       }
 
-      if (response.ok) {
-        const data = await response.json();
-        socket.data.userId = data.user.uid;
-        socket.data.userUid = data.user.uid;
-        if (dev) {
-          console.log(
-            "[Socket.IO] ✅ Authentification réussie pour:",
-            data.user.email
-          );
-        }
-        next();
-      } else {
-        console.log("[Socket.IO] ❌ Authentification échouée");
-        next(new Error("Authentification échouée"));
-      }
-    } catch (apiError) {
-      console.log(
-        "[Socket.IO] ❌ Erreur API d'authentification:",
-        apiError.message
-      );
-      next(new Error("Erreur d'authentification"));
-    }
-  } catch (error) {
-    console.error("[Socket.IO] ❌ Erreur d'authentification:", error);
-    next(new Error("Erreur d'authentification"));
-  }
-});
+//       if (response.ok) {
+//         const data = await response.json();
+//         socket.data.userId = data.user.uid;
+//         socket.data.userUid = data.user.uid;
+//         if (dev) {
+//           console.log(
+//             "[Socket.IO] ✅ Authentification réussie pour:",
+//             data.user.email
+//           );
+//         }
+//         next();
+//       } else {
+//         console.log("[Socket.IO] ❌ Authentification échouée");
+//         next(new Error("Authentification échouée"));
+//       }
+//     } catch (apiError) {
+//       console.log(
+//         "[Socket.IO] ❌ Erreur API d'authentification:",
+//         apiError.message
+//       );
+//       next(new Error("Erreur d'authentification"));
+//     }
+//   } catch (error) {
+//     console.error("[Socket.IO] ❌ Erreur d'authentification:", error);
+//     next(new Error("Erreur d'authentification"));
+//   }
+// });
 
 // Gestion des connexions
 io.on("connection", (socket) => {
