@@ -3,10 +3,10 @@
   "description": "Socket.IO server for Teamify messaging",
   "version": "1.0.0",
   "type": "module",
-  "main": "server.js",
+  "main": "server.simple.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js",
+    "start": "node server.simple.js",
+    "dev": "node server.simple.js",
     "build": "echo 'No build step required'",
     "vercel-build": "echo 'No build step required'"
   },
