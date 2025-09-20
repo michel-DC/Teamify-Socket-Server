@@ -29,161 +29,23 @@ console.log(`📦 Version Node.js: ${process.version}`);
 
 // Créer le serveur HTTP simple
 const httpServer = createServer((req, res) => {
-  const timestamp = new Date().toISOString();
-  const clientIP =
-    req.headers["x-forwarded-for"] ||
-    req.connection.remoteAddress ||
-    req.socket.remoteAddress;
-  const userAgent = req.headers["user-agent"] || "inconnu";
+  // 🚀 Laisser Socket.IO gérer ses propres requêtes
+  if (req.url.startsWith("/socket.io")) {
+    return;
+  }
 
-  console.log(`\n🌐 [HTTP] ${timestamp} - ${req.method} ${req.url}`);
-  console.log(`   📍 IP: ${clientIP}`);
-  console.log(`   🖥️  User-Agent: ${userAgent}`);
-  console.log(`   📋 Headers:`, JSON.stringify(req.headers, null, 2));
-  // Endpoint de health check
   if (req.url === "/health") {
-    console.log(`   ✅ [HEALTH] Health check demandé`);
     res.writeHead(200, { "Content-Type": "application/json" });
-    const healthData = {
-      status: "ok",
-      timestamp: new Date().toISOString(),
-      service: "socket-io-server",
-      uptime: process.uptime(),
-      memory: process.memoryUsage(),
-      connections: io.engine.clientsCount,
-    };
-    console.log(`   📊 [HEALTH] Réponse:`, healthData);
-    res.end(JSON.stringify(healthData));
+    res.end(JSON.stringify({ status: "ok" }));
     return;
   }
 
-  // Page d'accueil avec emoji
   if (req.url === "/" || req.url === "") {
-    console.log(`   🏠 [HOME] Page d'accueil demandée`);
-    res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-    res.end(`
-      <!DOCTYPE html>
-      <html lang="fr">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Teamify Socket.IO Server</title>
-        <style>
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f9f9f9;
-            margin: 0;
-            padding: 0;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #020102;
-          }
-          .container {
-            text-align: center;
-            background: #f9f9f9;
-            padding: 3rem;
-            border-radius: 12px;
-            border: 1px solid #333333;
-            max-width: 500px;
-            width: 90%;
-          }
-          .emoji {
-            font-size: 4rem;
-            margin-bottom: 1rem;
-            animation: pulse 2s infinite;
-          }
-          @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-          }
-          h1 {
-            font-size: 2.5rem;
-            margin-bottom: 1rem;
-            font-weight: 700;
-            color: #020102;
-          }
-          p {
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-            color: #4b5563;
-            line-height: 1.5;
-          }
-          .status {
-            background: #f9f9f9;
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            display: inline-block;
-            margin-top: 1rem;
-            border: 1px solid #333333;
-            color: #020102;
-            font-weight: 500;
-          }
-          .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin: 1.5rem 0;
-            text-align: left;
-          }
-          .info-item {
-            background: #f9f9f9;
-            padding: 1rem;
-            border-radius: 8px;
-            border: 1px solid #333333;
-          }
-          .info-label {
-            font-size: 0.9rem;
-            color: #4b5563;
-            margin-bottom: 0.25rem;
-          }
-          .info-value {
-            font-size: 1rem;
-            color: #020102;
-            font-weight: 500;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="emoji">🚀</div>
-          <h1>Teamify Socket.IO Server</h1>
-          <p>Serveur de messagerie en temps réel</p>
-          
-          <div class="info-grid">
-            <div class="info-item">
-              <div class="info-label">Port</div>
-              <div class="info-value">${process.env.PORT}</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Environnement</div>
-              <div class="info-value">${
-                dev ? "Développement" : "Production"
-              }</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Statut</div>
-              <div class="info-value">Actif</div>
-            </div>
-            <div class="info-item">
-              <div class="info-label">Service</div>
-              <div class="info-value">Socket.IO</div>
-            </div>
-          </div>
-          
-          <div class="status">
-            ✅ Serveur prêt pour les connexions
-          </div>
-        </div>
-      </body>
-      </html>
-    `);
+    res.writeHead(200, { "Content-Type": "text/html" });
+    res.end("<h1>🚀 Socket.IO Server</h1>");
     return;
   }
 
-  // Pour toutes les autres requêtes, retourner 404
-  console.log(`   ❌ [404] Route non trouvée: ${req.url}`);
   res.writeHead(404, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ error: "Not Found" }));
 });
