@@ -29,6 +29,36 @@ console.log(`📦 Version Node.js: ${process.version}`);
 
 // Créer le serveur HTTP simple
 const httpServer = createServer((req, res) => {
+  // Configuration CORS pour toutes les requêtes
+  const allowedOrigins = [
+    "https://teamify.onlinemichel.dev",
+    "https://www.teamify.onlinemichel.dev",
+    "http://localhost:3000",
+    "https://teamify-socket-server.up.railway.app",
+    "https://socket.teamify.onlinemichel.dev",
+  ];
+
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else if (origin) {
+    // Log des origines non autorisées pour le debugging
+    console.log(`🚫 [CORS] Origine non autorisée: ${origin}`);
+  }
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Cookie, Authorization, Content-Type, X-Requested-With"
+  );
+
+  // Gérer les requêtes preflight OPTIONS
+  if (req.method === "OPTIONS") {
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
   // 🚀 Laisser Socket.IO gérer ses propres requêtes
   if (req.url.startsWith("/socket.io")) {
     return;
@@ -61,11 +91,17 @@ const io = new Server(httpServer, {
       "https://teamify-socket-server.up.railway.app",
       "https://socket.teamify.onlinemichel.dev",
     ],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Cookie", "Authorization"],
+    allowedHeaders: [
+      "Cookie",
+      "Authorization",
+      "Content-Type",
+      "X-Requested-With",
+    ],
   },
-  transports: ["polling"],
+  transports: ["polling", "websocket"],
+  allowEIO3: true,
 });
 
 console.log("✅ Socket.IO initialisé");
