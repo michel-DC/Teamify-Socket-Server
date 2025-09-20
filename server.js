@@ -36,9 +36,38 @@ const httpServer = createServer((req, res) => {
     req.socket.remoteAddress;
   const userAgent = req.headers["user-agent"] || "inconnu";
 
+  // Configuration CORS pour toutes les requêtes
+  const allowedOrigins = [
+    "https://teamify.onlinemichel.dev",
+    "https://www.teamify.onlinemichel.dev",
+    "http://localhost:3000",
+    "https://teamify-socket-server.up.railway.app",
+    "https://socket.teamify.onlinemichel.dev",
+  ];
+
+  const origin = req.headers.origin;
+  if (allowedOrigins.includes(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Cookie, Authorization, Content-Type, X-Requested-With"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  // Gérer les requêtes OPTIONS (preflight)
+  if (req.method === "OPTIONS") {
+    console.log(`   ✅ [CORS] Preflight request autorisée pour: ${origin}`);
+    res.writeHead(200);
+    res.end();
+    return;
+  }
+
   console.log(`\n🌐 [HTTP] ${timestamp} - ${req.method} ${req.url}`);
   console.log(`   📍 IP: ${clientIP}`);
   console.log(`   🖥️  User-Agent: ${userAgent}`);
+  console.log(`   🌐 Origin: ${origin || "inconnu"}`);
   console.log(`   📋 Headers:`, JSON.stringify(req.headers, null, 2));
   // Endpoint de health check
   if (req.url === "/health") {
@@ -197,13 +226,19 @@ const io = new Server(httpServer, {
       "https://www.teamify.onlinemichel.dev",
       "http://localhost:3000",
       "https://teamify-socket-server.up.railway.app",
-      "https://socket.teamify.onlinemichel.dev/",
+      "https://socket.teamify.onlinemichel.dev",
     ],
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "OPTIONS"],
     credentials: true,
-    allowedHeaders: ["Cookie", "Authorization"],
+    allowedHeaders: [
+      "Cookie",
+      "Authorization",
+      "Content-Type",
+      "X-Requested-With",
+    ],
   },
   transports: ["websocket", "polling"],
+  allowEIO3: true,
 });
 
 console.log("✅ Socket.IO initialisé");
