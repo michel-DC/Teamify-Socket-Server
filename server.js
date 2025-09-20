@@ -65,7 +65,7 @@ const io = new Server(httpServer, {
     credentials: true,
     allowedHeaders: ["Cookie", "Authorization"],
   },
-  transports: ["websocket", "polling"],
+  transports: ["polling"],
 });
 
 console.log("✅ Socket.IO initialisé");
